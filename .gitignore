@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.egg
+
+# Backend build artifacts
+backend/build/
+backend/dist/
+
+# Backend user data (contains API keys)
+backend/config/settings.json
+
+# Embedded Python runtime (rebuilt during packaging)
+python-embed/
+
+# Release builds
+release/
+
+# Node
+node_modules/
+
+# Vite build output
+desktop/dist/
+
+# Tauri / Rust
+desktop/src-tauri/target/
+desktop/src-tauri/gen/
+desktop/src-tauri/bin/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Logs
+*.log
+
+# Environment
+.env

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SheetAgent v1.0</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "secondary-fixed": "#6ffbbe",
+        "secondary-fixed-dim": "#4edea3",
+        "primary": "#adc6ff",
+        "tertiary-container": "#ca8100",
+        "error": "#ffb4ab",
+        "on-primary-container": "#00285d",
+        "on-secondary-fixed": "#002113",
+        "on-error-container": "#ffdad6",
+        "on-surface": "#e1e2ec",
+        "on-surface-variant": "#c2c6d6",
+        "on-background": "#e1e2ec",
+        "surface-variant": "#32353c",
+        "on-primary-fixed": "#001a42",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary": "#ffb95f",
+        "secondary-container": "#00a572",
+        "primary-fixed-dim": "#adc6ff",
+        "surface": "#10131a",
+        "on-tertiary": "#472a00",
+        "on-tertiary-container": "#3e2400",
+        "outline": "#8c909f",
+        "on-error": "#690005",
+        "surface-container": "#1d2027",
+        "primary-container": "#4d8eff",
+        "surface-container-low": "#191b23",
+        "primary-fixed": "#d8e2ff",
+        "secondary": "#4edea3",
+        "on-primary-fixed-variant": "#004395",
+        "surface-container-lowest": "#0b0e15",
+        "surface-tint": "#adc6ff",
+        "on-primary": "#002e6a",
+        "on-secondary-container": "#00311f",
+        "inverse-surface": "#e1e2ec",
+        "surface-container-high": "#272a31",
+        "error-container": "#93000a",
+        "surface-bright": "#363941",
+        "on-secondary-fixed-variant": "#005236",
+        "on-tertiary-fixed-variant": "#653e00",
+        "background": "#10131a",
+        "surface-container-highest": "#32353c",
+        "inverse-on-surface": "#2e3038",
+        "on-secondary": "#003824",
+        "tertiary-fixed-dim": "#ffb95f",
+        "on-tertiary-fixed": "#2a1700",
+        "outline-variant": "#424754",
+        "inverse-primary": "#005ac2",
+        "surface-dim": "#10131a"
+      },
+      borderRadius: {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      spacing: {
+        "stack_gap_md": "16px",
+        "side_panel_width": "240px",
+        "stack_gap_sm": "8px",
+        "container_padding": "24px",
+        "gutter": "16px",
+        "nav_icon_width": "52px"
+      },
+      fontFamily: {
+        "body-md": ["Inter"],
+        "label-caps": ["Inter"],
+        "h1": ["Inter"],
+        "body-sm": ["Inter"],
+        "h2": ["Inter"],
+        "code-block": ["JetBrains Mono"]
+      },
+      fontSize: {
+        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+        "h1": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+        "h2": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+        "code-block": ["13px", { "lineHeight": "20px", "fontWeight": "400" }]
+      }
+    }
+  }
+}
+</script>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden">
+
+<!-- Nav Rail -->
+<nav class="bg-surface dark:bg-surface w-[52px] h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col items-center py-4 z-50">
+  <div class="mb-8 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+    <span class="font-h2 text-h2 font-bold text-on-primary-container">S</span>
+  </div>
+  <div class="flex flex-col gap-4 w-full items-center">
+    <button id="nav-workbench" class="nav-btn w-full flex justify-center py-3 text-primary dark:text-primary border-l-2 border-primary transition-colors duration-150 hover:bg-surface-variant dark:hover:bg-surface-variant" data-page="workbench" title="Files" data-i18n="nav.files">
+      <span class="material-symbols-outlined">folder_open</span>
+    </button>
+    <button id="nav-history" class="nav-btn w-full flex justify-center py-3 text-on-surface-variant dark:text-on-surface-variant border-l-2 border-transparent transition-colors duration-150 hover:bg-surface-variant dark:hover:bg-surface-variant" data-page="history" title="History" data-i18n="nav.history">
+      <span class="material-symbols-outlined">history</span>
+    </button>
+    <button id="nav-settings" class="nav-btn w-full flex justify-center py-3 text-on-surface-variant dark:text-on-surface-variant border-l-2 border-transparent transition-colors duration-150 hover:bg-surface-variant dark:hover:bg-surface-variant" data-page="settings" title="Settings" data-i18n="nav.settings">
+      <span class="material-symbols-outlined">settings</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Context Panel: Workbench -->
+<aside id="ctx-workbench" class="bg-surface-container dark:bg-surface-container w-[240px] h-screen fixed left-[52px] top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col p-4 z-40">
+  <div class="mb-4">
+    <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase" data-i18n="project.explorer">Project Explorer</h3>
+    <h2 class="font-h2 text-h2 text-on-surface mt-1" data-i18n="context.panel">Context Panel</h2>
+  </div>
+  <!-- Breadcrumb & Toolbar -->
+  <div class="flex items-center gap-1 mb-2">
+    <button id="btn-parent-dir" class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded transition-colors" title="Parent Directory">
+      <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+    </button>
+    <button id="btn-new-folder" class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded transition-colors" title="New Folder">
+      <span class="material-symbols-outlined text-[18px]">create_new_folder</span>
+    </button>
+    <span id="breadcrumb" class="flex-1 truncate font-code-block text-code-block text-on-surface-variant text-[11px] ml-1">/</span>
+  </div>
+  <div id="upload-area" class="border border-dashed border-outline-variant bg-surface-container-low rounded-lg p-3 mb-3 flex flex-col items-center justify-center text-center transition-colors duration-200 hover:border-primary hover:bg-surface-container cursor-pointer">
+    <span class="material-symbols-outlined text-[24px] text-on-surface-variant mb-1">cloud_upload</span>
+    <div class="font-body-sm text-body-sm text-on-surface-variant" data-i18n="upload.drop">Drop or click to upload</div>
+    <input type="file" id="file-upload" multiple accept=".xlsx,.xls,.csv,.parquet,.docx,.doc,.png,.jpg,.jpeg,.gif,.webp,.bmp" hidden>
+  </div>
+  <div id="upload-progress" class="hidden font-body-sm text-body-sm text-secondary mb-2"></div>
+  <div class="flex-1 overflow-y-auto">
+    <ul id="ctx-file-list" class="space-y-1">
+      <li class="text-on-surface-variant font-body-sm text-body-sm italic" data-i18n="files.no_files">No files</li>
+    </ul>
+  </div>
+</aside>
+
+<!-- Context Panel: History -->
+<aside id="ctx-history" class="hidden bg-surface-container dark:bg-surface-container w-[240px] h-screen fixed left-[52px] top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col p-4 z-40">
+  <div class="mb-6">
+    <h2 class="font-h2 text-h2 font-semibold text-on-surface mb-1">Context Panel</h2>
+    <div class="font-label-caps text-label-caps text-on-surface-variant">Project Explorer</div>
+  </div>
+  <div class="mb-4">
+    <div class="relative w-full">
+      <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+      <input class="w-full bg-surface text-on-surface border border-outline-variant rounded py-1.5 pl-8 pr-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-sm text-body-sm transition-colors" placeholder="Filter history..." type="text"/>
+    </div>
+  </div>
+  <div class="flex flex-col gap-1 overflow-y-auto pr-2 -mr-2">
+    <div class="text-label-caps font-label-caps text-on-surface-variant mt-4 mb-2">TIME PERIOD</div>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface font-bold bg-surface-variant/50 w-full hover:text-primary transition-colors">Today</button>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface-variant w-full hover:text-primary transition-colors hover:bg-surface-variant/30">Yesterday</button>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface-variant w-full hover:text-primary transition-colors hover:bg-surface-variant/30">Past 7 Days</button>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface-variant w-full hover:text-primary transition-colors hover:bg-surface-variant/30">Older</button>
+    <div class="text-label-caps font-label-caps text-on-surface-variant mt-6 mb-2">STATUS</div>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface-variant w-full hover:text-primary transition-colors flex items-center gap-2 hover:bg-surface-variant/30">
+      <span class="w-2 h-2 rounded-full bg-secondary inline-block"></span> Success
+    </button>
+    <button class="text-left px-2 py-1.5 rounded text-on-surface-variant w-full hover:text-primary transition-colors flex items-center gap-2 hover:bg-surface-variant/30">
+      <span class="w-2 h-2 rounded-full bg-error inline-block"></span> Error
+    </button>
+  </div>
+</aside>
+
+<!-- Main Wrapper -->
+<div id="main-wrapper" class="ml-[292px] flex-1 flex flex-col h-screen overflow-hidden">
+
+  <!-- Top App Bar -->
+  <header id="top-bar" class="bg-surface dark:bg-surface fixed top-0 right-0 w-[calc(100%-292px)] h-14 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center px-6 z-30 transition-all duration-200">
+    <div class="flex items-center gap-4">
+      <span id="page-title" class="font-h2 text-h2 font-semibold text-on-surface dark:text-on-surface">SheetAgent</span>
+      <div class="h-4 w-px bg-outline-variant"></div>
+      <span id="session-display" class="font-code-block text-code-block text-on-surface-variant" data-i18n="session.new">New Session</span>
+      <div id="agent-status" class="flex items-center gap-2 px-2 py-0.5 rounded-full bg-surface-container-high border border-outline-variant">
+        <span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant">Idle</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-1">
+      <button id="lang-switch-btn" class="p-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high rounded transition-colors duration-200 font-body-sm text-body-sm" title="Switch Language" data-i18n="lang.switch_title">
+        <span class="material-symbols-outlined text-[18px]">language</span>
+      </button>
+      <button id="new-session-btn" class="p-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high rounded transition-colors duration-200" title="New Session" data-i18n="session.new">
+        <span class="material-symbols-outlined">add</span>
+      </button>
+      <button class="p-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high rounded transition-colors duration-200">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- View: Workbench -->
+  <main id="view-workbench" class="flex-1 mt-14 flex overflow-hidden bg-background">
+    <!-- Left Column -->
+    <div id="left-col" class="flex flex-col border-r border-outline-variant min-w-0" style="width:50%">
+      <!-- Chat/Logs Area -->
+      <div id="chat-area" class="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 min-w-0"></div>
+      <!-- Input Area -->
+      <div id="input-area" class="p-4 bg-surface-container-lowest border-t border-outline-variant shrink-0">
+        <div class="relative flex items-center">
+          <textarea id="chat-input" class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-3 pl-4 pr-14 text-on-surface font-body-md focus:border-primary focus:ring-1 focus:ring-primary resize-none placeholder:text-outline h-[56px]" placeholder="Ask SheetAgent to process your data... @file.xlsx" data-i18n="chat.placeholder"></textarea>
+          <button id="send-btn" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-full hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-[18px] leading-none">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Resizer -->
+    <div id="resizer" class="w-[8px] shrink-0 cursor-col-resize flex items-center justify-center bg-surface hover:bg-primary/20 transition-colors relative group" title="Drag to resize">
+      <div class="w-[2px] h-8 bg-outline-variant rounded group-hover:bg-primary transition-colors"></div>
+    </div>
+
+    <!-- Right Column -->
+    <div id="right-col" class="flex flex-col bg-surface-container-lowest min-w-0" style="flex:1">
+      <!-- Data Preview Header -->
+      <div class="p-4 border-b border-outline-variant bg-surface shrink-0">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2 overflow-hidden">
+            <span class="material-symbols-outlined text-on-surface-variant shrink-0">table_chart</span>
+            <h3 class="font-h2 text-h2 text-on-surface shrink-0" data-i18n="data.preview">Data Preview</h3>
+            <span id="preview-filename" class="font-code-block text-[11px] text-outline truncate ml-2"></span>
+          </div>
+          <button id="btn-export" class="px-3 py-1 text-primary border border-outline-variant rounded hover:bg-surface-container-high transition-colors font-label-caps text-label-caps flex items-center gap-1 shrink-0">
+            <span class="material-symbols-outlined text-[14px]">download</span> EXPORT
+          </button>
+        </div>
+        <div id="sheet-tabs" class="hidden mt-3 mb-2"></div>
+      </div>
+      <!-- Data Table -->
+      <div id="preview-content" class="flex-1 overflow-auto">
+        <div class="text-on-surface-variant font-body-sm text-body-sm text-center italic py-10" data-i18n="preview.empty">Upload files and run a task to preview data</div>
+      </div>
+      <!-- Collapsible Code Panel -->
+      <div id="code-section" class="h-[250px] border-t border-outline-variant bg-[#0b0e15] flex flex-col shrink-0">
+        <div id="code-toggle" class="flex justify-between items-center p-2 border-b border-outline-variant bg-surface-container-low cursor-pointer select-none">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-primary">code</span>
+            <span class="font-label-caps text-label-caps text-on-surface" data-i18n="code.title">GENERATED CODE</span>
+          </div>
+          <span id="code-arrow" class="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform">keyboard_arrow_down</span>
+        </div>
+        <div id="code-body" class="flex-1 p-4 overflow-auto font-code-block text-code-block text-[#e1e2ec]">
+          <pre><code id="code-preview"></code></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- View: History -->
+  <!-- View: History -->
+  <main id="view-history" class="hidden flex-1 flex flex-col overflow-hidden bg-background pt-14">
+    <div class="flex-1 overflow-y-auto p-container_padding">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-end mb-6 border-b border-outline-variant pb-4">
+          <div>
+            <h1 class="font-h1 text-h1 text-on-surface" data-i18n="history.title">Session History</h1>
+            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="history.subtitle">Review and restore previous agent workflows.</p>
+          </div>
+        </div>
+        <!-- Filters -->
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <div class="relative flex-1 min-w-[200px]">
+            <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+            <input id="history-search" class="w-full bg-surface-container-highest border border-outline-variant rounded py-2 pl-8 pr-3 text-on-surface focus:outline-none focus:border-primary font-body-sm text-body-sm transition-colors" placeholder="Search sessions..." type="text" data-i18n="history.search"/>
+          </div>
+          <div class="flex gap-1">
+            <button class="history-period-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors active bg-surface-variant text-on-surface font-semibold" data-period="all" data-i18n="history.all">All</button>
+            <button class="history-period-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors" data-period="today" data-i18n="history.today">Today</button>
+            <button class="history-period-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors" data-period="yesterday" data-i18n="history.yesterday">Yesterday</button>
+            <button class="history-period-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors" data-period="week" data-i18n="history.week">7 Days</button>
+            <button class="history-period-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors" data-period="older" data-i18n="history.older">Older</button>
+          </div>
+          <div class="flex gap-1">
+            <button class="history-status-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors active bg-surface-variant text-on-surface font-semibold" data-status="all" data-i18n="history.all">All</button>
+            <button class="history-status-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors flex items-center gap-1.5" data-status="success"><span class="w-2 h-2 rounded-full bg-secondary"></span>Success</button>
+            <button class="history-status-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors flex items-center gap-1.5" data-status="error"><span class="w-2 h-2 rounded-full bg-error"></span>Error</button>
+            <button class="history-status-btn px-3 py-1.5 rounded text-on-surface-variant font-body-sm text-body-sm border border-transparent hover:bg-surface-variant transition-colors flex items-center gap-1.5" data-status="active"><span class="w-2 h-2 rounded-full bg-primary"></span>Active</button>
+          </div>
+        </div>
+        <div id="history-list" class="flex flex-col gap-3">
+          <div class="text-on-surface-variant font-body-sm text-body-sm text-center italic py-10" data-i18n="history.empty">Session history will appear here</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- View: History Detail -->
+  <main id="view-history-detail" class="hidden flex-1 flex flex-col overflow-hidden bg-background pt-14 ml-[52px]">
+    <div class="border-b border-outline-variant p-4 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="history-detail-back" class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h2 id="history-detail-title" class="font-h2 text-h2 text-on-surface">Session</h2>
+      </div>
+      <button id="history-detail-continue" class="px-4 py-2 bg-primary text-on-primary rounded hover:bg-primary-container transition-colors font-body-sm text-body-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">edit</span> Continue in Workbench
+      </button>
+    </div>
+    <div id="history-detail-chat" class="flex-1 overflow-y-auto p-6 space-y-6 min-w-0 max-w-4xl mx-auto w-full"></div>
+  </main>
+
+  <!-- View: Settings -->
+  <main id="view-settings" class="hidden flex-1 mt-14 p-container_padding w-full max-w-4xl mx-auto flex flex-col gap-stack_gap_md overflow-y-auto">
+    <div class="flex flex-col gap-8 pb-12">
+      <!-- LLM Configuration -->
+      <section class="bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-col gap-6">
+        <h2 class="font-h2 text-h2 text-on-surface border-b border-outline-variant pb-4" data-i18n="settings.llm_config">LLM Configuration</h2>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" data-i18n="settings.provider">Provider</label>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <button class="provider-btn border border-primary bg-primary-fixed/10 text-primary rounded py-2 px-3 text-center transition-colors" data-provider="claude">Claude</button>
+            <button class="provider-btn border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary rounded py-2 px-3 text-center transition-colors" data-provider="openai">OpenAI</button>
+            <button class="provider-btn border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary rounded py-2 px-3 text-center transition-colors" data-provider="deepseek">DeepSeek</button>
+            <button class="provider-btn border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary rounded py-2 px-3 text-center transition-colors" data-provider="qwen">Qwen</button>
+            <button class="provider-btn border border-outline-variant hover:border-primary text-on-surface-variant hover:text-primary rounded py-2 px-3 text-center transition-colors" data-provider="ollama">Ollama</button>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" data-i18n="settings.api_key">API Key</label>
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">key</span>
+            <input id="cfg-api-key" type="password" class="w-full bg-surface-container-highest border border-outline-variant rounded py-2 pl-10 pr-3 text-on-surface focus:outline-none focus:border-primary font-code-block text-code-block transition-colors" placeholder="Enter API Key"/>
+          </div>
+          <p id="cfg-api-key-hint" class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="settings.api_key_hint">Stored securely in your local environment.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex flex-col gap-2">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" data-i18n="settings.model">Model</label>
+            <input id="cfg-model" type="text" class="w-full bg-surface-container-highest border border-outline-variant rounded py-2 px-3 text-on-surface focus:outline-none focus:border-primary font-code-block text-code-block transition-colors" placeholder="e.g. claude-3-sonnet-20240229"/>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" data-i18n="settings.base_url">Base URL (Optional)</label>
+            <input id="cfg-base-url" type="text" class="w-full bg-surface-container-highest border border-outline-variant rounded py-2 px-3 text-on-surface focus:outline-none focus:border-primary font-code-block text-code-block transition-colors" placeholder="https://api.anthropic.com"/>
+          </div>
+        </div>
+      </section>
+      <!-- Environment -->
+      <section class="bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-col gap-6">
+        <h2 class="font-h2 text-h2 text-on-surface border-b border-outline-variant pb-4" data-i18n="settings.environment">Environment</h2>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" data-i18n="settings.workspace">Workspace Path</label>
+          <div class="flex gap-2">
+            <input id="cfg-workspace" type="text" class="flex-1 bg-surface-container-highest border border-outline-variant rounded py-2 px-3 text-on-surface focus:outline-none focus:border-primary font-code-block text-code-block transition-colors" placeholder="/path/to/workspace"/>
+            <button id="cfg-workspace-btn" class="bg-surface-variant border border-outline-variant text-on-surface hover:border-primary hover:text-primary rounded px-4 py-2 transition-colors flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]">folder</span>
+            </button>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" data-i18n="settings.workspace_hint">Default directory for file reads/writes by the agent.</p>
+        </div>
+      </section>
+      <!-- Actions -->
+      <div class="flex justify-end pt-4 border-t border-outline-variant">
+        <button id="save-config-btn" class="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded px-6 py-2.5 font-body-md text-body-md font-semibold transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">save</span> Save & Restart Session
+        </button>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- Context Menu -->
+<div id="context-menu" class="hidden fixed z-[100] bg-surface-container border border-outline-variant rounded shadow-lg py-1 min-w-[120px]">
+  <button id="ctx-copy-btn" class="w-full text-left px-3 py-1.5 text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors flex items-center gap-2">
+    <span class="material-symbols-outlined text-[16px]">content_copy</span> Copy filename
+  </button>
+  <button id="ctx-delete-btn" class="w-full text-left px-3 py-1.5 text-error hover:bg-error/10 font-body-sm text-body-sm transition-colors flex items-center gap-2">
+    <span class="material-symbols-outlined text-[16px]">delete</span> Delete
+  </button>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

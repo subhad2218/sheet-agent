@@ -1,0 +1,91 @@
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #10131a;
+    border-left: 1px solid #424754;
+}
+::-webkit-scrollbar-thumb {
+    background: #424754;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #8c909f;
+}
+
+/* ---- Sheet Tabs Horizontal Scroll ---- */
+#sheet-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 6px;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #424754 transparent;
+}
+#sheet-tabs::-webkit-scrollbar {
+    height: 4px;
+    background: transparent;
+}
+#sheet-tabs::-webkit-scrollbar-thumb {
+    background: #424754;
+    border-radius: 2px;
+}
+#sheet-tabs button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* ---- Preview Horizontal Scroll ---- */
+#preview-content {
+    overflow: auto !important;
+}
+
+#preview-content table {
+    width: 100%;
+}
+
+#preview-content table th,
+#preview-content table td {
+    vertical-align: middle;
+}
+
+/* Markdown tables */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 20px;
+}
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #424754;
+    padding: 6px 10px;
+    text-align: left;
+    color: #e1e2ec;
+}
+.markdown-body th {
+    background: #272a31;
+    font-weight: 600;
+    color: #adc6ff;
+}
+.markdown-body tr:nth-child(even) {
+    background: #1d2027;
+}
+.markdown-body tr:hover {
+    background: #272a31;
+}
+
+/* ---- Reasoning panel refinements ---- */
+.reasoning-panel .reasoning-toggle {
+    border-radius: 4px 4px 0 0;
+}
+.reasoning-panel .reasoning-body {
+    border-radius: 0 0 4px 4px;
+    max-height: 320px;
+    overflow-y: auto;
+}

@@ -1,0 +1,27 @@
+# SheetAgent Configuration
+# You can edit this file to customize default settings.
+# Settings here can be overridden by user settings in ~/.sheet-agent/settings.json
+
+# LLM Configuration
+llm:
+  # Provider: claude, openai, deepseek, qwen, ollama
+  provider: claude
+
+  # Model name (leave empty to use provider default)
+  model: ""
+
+  # API Key (leave empty to use environment variable or set in UI)
+  api_key: ""
+
+  # Base URL for API endpoint (optional, for custom endpoints)
+  base_url: ""
+
+# Workspace Configuration
+workspace:
+  # Default workspace path (leave empty to use ~/SheetAgent/workspace)
+  default_path: ""
+
+# Sandbox Configuration (Advanced)
+sandbox:
+  # Maximum execution time in seconds
+  timeout_seconds: 30
