@@ -1,5 +1,7 @@
 # SheetAgent
 
+[中文](README.zh.md)
+
 AI-powered desktop app for processing Excel, CSV, and Parquet files with natural language.
 
 Built with Tauri 2.0 + FastAPI, SheetAgent lets you describe data tasks in plain language and watches the AI agent read, transform, and export your files — all within a sandboxed Python environment.
@@ -38,7 +40,7 @@ Built with Tauri 2.0 + FastAPI, SheetAgent lets you describe data tasks in plain
 │  │  │  LLM Providers                 ││  │
 │  │  │  Claude / OpenAI / DeepSeek /  ││  │
 │  │  │  Qwen / Ollama                 ││  │
-│  │  └────────────────────────────────┘│  │
+│  │  └─────────────────────────────────┘│  │
 │  └─────────────────────────────────────┘  │
 └─────────────────────────────────────────────┘
 ```
@@ -92,9 +94,6 @@ sheet-agent/
 │   │   └── tauri.conf.json   # Tauri configuration
 │   ├── package.json
 │   └── vite.config.js
-├── docs/
-│   ├── PRODUCT.md            # Product documentation (Chinese)
-│   └── TECHNICAL.md          # Technical documentation (Chinese)
 ├── build.py                  # One-stop build script
 └── .gitignore
 ```

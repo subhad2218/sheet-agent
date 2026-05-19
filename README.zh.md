@@ -1,5 +1,7 @@
 # SheetAgent
 
+[English](README.md)
+
 基于 AI 的桌面数据处理应用，用自然语言处理 Excel、CSV 和 Parquet 文件。
 
 基于 Tauri 2.0 + FastAPI 构建，只需用自然语言描述数据处理需求，AI 代理就会自动读取、转换并导出文件——所有代码在沙箱环境中执行。
@@ -92,9 +94,6 @@ sheet-agent/
 │   │   └── tauri.conf.json   # Tauri 配置
 │   ├── package.json
 │   └── vite.config.js
-├── docs/
-│   ├── PRODUCT.md            # 产品文档（中文）
-│   └── TECHNICAL.md          # 技术文档（中文）
 ├── build.py                  # 一键构建脚本
 └── .gitignore
 ```
